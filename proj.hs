@@ -20,27 +20,18 @@ addCidade mapa cidade = cidade : mapa
 removeCidade :: Mapa -> Nome -> Mapa
 removeCidade mapa nomeCidade = [(nome, coordenadas, rotas) | (nome, coordenadas, rotas) <- mapa, nome /= nomeCidade]
 
--- Adiciona uma rota de uma cidade para outra no mapa
+
+-- Adicionei as rotas
 addRotas :: Mapa -> Nome -> Nome -> Mapa
 addRotas mapa cidadeOrigem cidadeDestino =
-    let mapaAtualizado = map (\(nome, coords, rotas) ->
-            if nome == cidadeOrigem
-                then (nome, coords, cidadeDestino : rotas)
-                else (nome, coords, rotas)
-            ) mapa
-        in mapaAtualizado
+    let mapaAtualizado = [(nome, coords, if nome == cidadeOrigem then (meuTrd (nome, coords, rotas)) ++ [cidadeDestino] else rotas) | (nome, coords, rotas) <- mapa]
+    in mapaAtualizado
 
--- Remove uma rota de uma cidade para outra do mapa
+-- Removi as rotas
 removeRotas :: Mapa -> Nome -> Nome -> Mapa
 removeRotas mapa cidadeOrigem cidadeDestino =
-    let mapaAtualizado = map (\(nome, coords, rotas) ->
-            if nome == cidadeOrigem
-                then (nome, coords, filter (/= cidadeDestino) rotas)
-                else (nome, coords, rotas)
-            ) mapa
-        in mapaAtualizado
-
-
+    let mapaAtualizado = [(nome, coords, if nome == cidadeOrigem then [rota | rota <- rotas, rota /= cidadeDestino] else rotas) | (nome, coords, rotas) <- mapa]
+    in mapaAtualizado
 
 main :: IO ()
 main = do
@@ -57,12 +48,12 @@ main = do
     let mapa2 = addCidade mapa1 cidade2
     print mapa2
 
--- Adicione rotas entre cidades
+-- Adicionei as rotas
     let mapaComRotas = addRotas mapa2 "Aracaju" "Itabaiana"
     printf "Adicionando rota entre Aracaju e Itabaiana\n"
     print mapaComRotas
 
-    -- Remova rotas entre cidades (opcional)
+-- Removi as rotas
     let mapaSemRotas = removeRotas mapaComRotas "Aracaju" "Itabaiana"
     printf "Removendo rota entre Aracaju e Itabaiana\n"
     print mapaSemRotas
